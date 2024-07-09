@@ -27,22 +27,28 @@ const documentTypeSchema = new Schema({
 
 const DocumentType = mongoose.model('DocumentType', documentTypeSchema);
 
-const infoDocument = new Schema({
+const infoDocumentSchema = new Schema({
   documentNumber: { type: String, required: false, default: null },
   documentIssueDate: { type: Date, required: false, default: null }
 });
 
-const DocumentInfo = mongoose.model('DocumentInfo', infoDocument);
+const DocumentInfo = mongoose.model('DocumentInfo', infoDocumentSchema);
+
+const currentLocationSchema = new Schema({
+  nationality: { type: String, required: false, default: null },
+  city: { type: String, required: false, default: null },
+  adress: { type: String, required: false, default: null },
+  coordinates: { type: String, required: false, default: null },
+});
+
+const CurrentLocation = mongoose.model('CurrentLocation', currentLocationSchema);
 
 // Esquema para Tourist
 const touristSchema = new Schema({
-  nationality: { type: String, required: true },
-  city: { type: String, required: true },
-  adress: { type: String, required: false, default: null },
-  coordinates: { type: String, required: false, default: null },
+  currentLocation: { type: Schema.Types.ObjectId, ref: 'CurrentLocation', required: false, default: null },
   documentType: { type: Schema.Types.ObjectId, ref: 'DocumentType', required: false, default: null },
   documentInfo: { type: Schema.Types.ObjectId, ref: 'DocumentInfo', required: false, default: null },
-  birthDate: { type: Date, required: true, default: true }
+  birthDate: { type: Date, required: true }
   // Agrega otros campos específicos para turistas
 });
 
@@ -51,12 +57,10 @@ const Tourist = mongoose.model('Tourist', touristSchema);
 // Esquema para Agency
 const agencySchema = new Schema({
   agencyName: { type: String, required: true },
-  city: { type: String, required: true },
-  adress: { type: String, required: false, default: null },
-  coordinates: { type: String, required: false, default: null },
+  currentLocation: { type: Schema.Types.ObjectId, ref: 'CurrentLocation', required: false, default: null },
   documentType: { type: Schema.Types.ObjectId, ref: 'DocumentType', required: false, default: null },
   documentInfo: { type: Schema.Types.ObjectId, ref: 'DocumentInfo', required: false, default: null },
-  birthDate: { type: Date, required: true, default: true }
+  createAt: { type: Date, required: true }
   // Agrega otros campos específicos para agencias
 });
 
@@ -67,11 +71,12 @@ const userSchema = new mongoose.Schema({
   names: { type: String, required: "The names field is required" },
   createAt: { type: Date, default: Date.now },
   updateAt: { type: Date, default: Date.now },
-  isConfirmed: {type: Boolean, default: false},
   userIsActive: {type: Boolean, default: false},
   lastNames: { type: String, required: "The Last Names field is required" },
   email: { type: String, required: "The email field is required" },
   phone: { type: String, required: "The phone field is required" },
+  confirmationCode: { type: String, required: true },
+  isConfirmed: {type: Boolean, default: false },
   isTourist: { type: Schema.ObjectId, ref: "Tourist", required: false, default: null },
   isAgency: { type: Schema.ObjectId, ref: "Agency", required: false, default: null },
   isPoliticsTrue: { type: Boolean, required: "The politics field is required" },
@@ -80,6 +85,63 @@ const userSchema = new mongoose.Schema({
 
 // Create a User model based on the schema
 const User = mongoose.model('User', userSchema);
+
+// Función para generar un código aleatorio
+function generateConfirmationCode() {
+  const digits = '0123456789';
+  let code = '';
+  for (let i = 0; i < 6; i++) {
+    code += digits[Math.floor(Math.random() * 10)];
+  }
+  return code;
+}
+
+// Ruta para enviar el código de confirmación por correo electrónico
+app.post('/sendConfirmationCodeEmail', async (req, res) => {
+  const { email } = req.body;
+
+  // Generar un código de confirmación
+  const confirmationCode = generateConfirmationCode();
+
+  // Guardar el código de confirmación en la base de datos
+  try {
+    const user = await User.findOneAndUpdate(
+      { email: email },
+      { confirmationCode: confirmationCode },
+      { new: true, upsert: true }
+    );
+
+    // Enviar el código por correo electrónico
+    await sendConfirmationEmail(email, confirmationCode);
+
+    res.status(200).json({ message: 'Confirmation code sent successfully' });
+  } catch (error) {
+    console.error('Error sending confirmation code:', error);
+    res.status(500).json({ message: 'Failed to send confirmation code' });
+  }
+});
+
+app.post('/verifyConfirmationCodeEmail', async (req, res) => {
+  const { email, code } = req.body;
+
+  try {
+    // Buscar el usuario por su correo electrónico y el código de confirmación
+    const user = await User.findOne({ email: email, confirmationCode: code });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Código de confirmación inválido' });
+    }
+
+    // Marcar el usuario como confirmado
+    user.isConfirmed = true;
+    await user.save();
+
+    res.status(200).json({ message: 'Usuario confirmado correctamente' });
+  } catch (error) {
+    console.error('Error al verificar el código de confirmación:', error);
+    res.status(500).json({ message: 'Error al verificar el código de confirmación' });
+  }
+});
 
 // Middleware to parse JSON bodies
 app.use(express.json());
