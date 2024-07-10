@@ -4,6 +4,9 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Schema = mongoose.Schema;
+const autogen = require('swagger-autogen')({openapi: '3.0.0'});
+
+//api key twilio VLDDKZXFBZPHUYBKBLUYHMVM
 
 // Creating an Express application instance
 const app = express();
@@ -22,7 +25,7 @@ mongoose.connect('mongodb://localhost:27017/mydatabase')
 // Esquema para Tipo de documento
 const documentTypeSchema = new Schema({
   name: { type: String, required: true },
-  description: { type: String },  
+  description: { type: String },
 });
 
 const DocumentType = mongoose.model('DocumentType', documentTypeSchema);
@@ -69,14 +72,14 @@ const Agency = mongoose.model('Agency', agencySchema);
 // Define a schema for the User collection
 const userSchema = new mongoose.Schema({
   names: { type: String, required: "The names field is required" },
+  lastNames: { type: String, required: "The Last Names field is required" },
   createAt: { type: Date, default: Date.now },
   updateAt: { type: Date, default: Date.now },
-  userIsActive: {type: Boolean, default: false},
-  lastNames: { type: String, required: "The Last Names field is required" },
+  userIsActive: { type: Boolean, default: false },
   email: { type: String, required: "The email field is required" },
   phone: { type: String, required: "The phone field is required" },
   confirmationCode: { type: String, required: true },
-  isConfirmed: {type: Boolean, default: false },
+  isConfirmed: { type: Boolean, default: false },
   isTourist: { type: Schema.ObjectId, ref: "Tourist", required: false, default: null },
   isAgency: { type: Schema.ObjectId, ref: "Agency", required: false, default: null },
   isPoliticsTrue: { type: Boolean, required: "The politics field is required" },
@@ -177,7 +180,18 @@ app.post('/api/register', async (req, res) => {
     // Create a new user
     const newUser = new User({
       username: req.body.username,
+      email: req.body.email,      
+      names: req.body.names,
+      lastNames: req.body.lastNames,
+      createAt: Date.now(),
+      updateAt: Date.now(),
+      userIsActive: false,
       email: req.body.email,
+      phone: req.body.phone,
+      isTourist: req.body.isTourist,
+      isAgency: req.body.isAgency,
+      isPoliticsTrue: req.body.isPoliticsTrue,
+      isTtoDtosTrue: req.body.isTtoDtosTrue,
       password: hashedPassword
     });
 
