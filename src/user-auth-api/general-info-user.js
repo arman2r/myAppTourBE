@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Schema = mongoose.Schema;
 const autogen = require('swagger-autogen')({openapi: '3.0.0'});
+const User = require('../models/userModels')
 
 //api key twilio VLDDKZXFBZPHUYBKBLUYHMVM
 
@@ -21,73 +22,9 @@ mongoose.connect('mongodb://localhost:27017/mydatabase')
     console.error('Error connecting to MongoDB:', error);
   });
 
+ 
 
-// Esquema para Tipo de documento
-const documentTypeSchema = new Schema({
-  name: { type: String, required: true },
-  description: { type: String },
-});
 
-const DocumentType = mongoose.model('DocumentType', documentTypeSchema);
-
-const infoDocumentSchema = new Schema({
-  documentNumber: { type: String, required: false, default: null },
-  documentIssueDate: { type: Date, required: false, default: null }
-});
-
-const DocumentInfo = mongoose.model('DocumentInfo', infoDocumentSchema);
-
-const currentLocationSchema = new Schema({
-  nationality: { type: String, required: false, default: null },
-  city: { type: String, required: false, default: null },
-  adress: { type: String, required: false, default: null },
-  coordinates: { type: String, required: false, default: null },
-});
-
-const CurrentLocation = mongoose.model('CurrentLocation', currentLocationSchema);
-
-// Esquema para Tourist
-const touristSchema = new Schema({
-  currentLocation: { type: Schema.Types.ObjectId, ref: 'CurrentLocation', required: false, default: null },
-  documentType: { type: Schema.Types.ObjectId, ref: 'DocumentType', required: false, default: null },
-  documentInfo: { type: Schema.Types.ObjectId, ref: 'DocumentInfo', required: false, default: null },
-  birthDate: { type: Date, required: true }
-  // Agrega otros campos específicos para turistas
-});
-
-const Tourist = mongoose.model('Tourist', touristSchema);
-
-// Esquema para Agency
-const agencySchema = new Schema({
-  agencyName: { type: String, required: true },
-  currentLocation: { type: Schema.Types.ObjectId, ref: 'CurrentLocation', required: false, default: null },
-  documentType: { type: Schema.Types.ObjectId, ref: 'DocumentType', required: false, default: null },
-  documentInfo: { type: Schema.Types.ObjectId, ref: 'DocumentInfo', required: false, default: null },
-  createAt: { type: Date, required: true }
-  // Agrega otros campos específicos para agencias
-});
-
-const Agency = mongoose.model('Agency', agencySchema);
-
-// Define a schema for the User collection
-const userSchema = new mongoose.Schema({
-  names: { type: String, required: "The names field is required" },
-  lastNames: { type: String, required: "The Last Names field is required" },
-  createAt: { type: Date, default: Date.now },
-  updateAt: { type: Date, default: Date.now },
-  userIsActive: { type: Boolean, default: false },
-  email: { type: String, required: "The email field is required" },
-  phone: { type: String, required: "The phone field is required" },
-  confirmationCode: { type: String, required: true },
-  isConfirmed: { type: Boolean, default: false },
-  isTourist: { type: Schema.ObjectId, ref: "Tourist", required: false, default: null },
-  isAgency: { type: Schema.ObjectId, ref: "Agency", required: false, default: null },
-  isPoliticsTrue: { type: Boolean, required: "The politics field is required" },
-  isTtoDtosTrue: { type: Boolean, required: "The processing of personal data field is required" }
-});
-
-// Create a User model based on the schema
-const User = mongoose.model('User', userSchema);
 
 // Función para generar un código aleatorio
 function generateConfirmationCode() {
