@@ -129,6 +129,11 @@ app.post('/api/register', async (req, res) => {
       isAgency: req.body.isAgency,
       isPoliticsTrue: req.body.isPoliticsTrue,
       isTtoDtosTrue: req.body.isTtoDtosTrue,
+      documentType: req.body.documentType,
+      documentNumber: req.body.documentNumber,
+      documentIssueDate: req.body.documentIssueDate,
+      birthDate: req.body.birthDate,
+
       password: hashedPassword
     });
 

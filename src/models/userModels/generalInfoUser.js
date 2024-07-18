@@ -14,6 +14,13 @@ const userSchema = new mongoose.Schema({
     isConfirmed: { type: Boolean, default: false },
     isTourist: { type: Schema.ObjectId, ref: "Tourist", required: false, default: null },
     isAgency: { type: Schema.ObjectId, ref: "Agency", required: false, default: null },
+    nationality: { type: String, required: false, default: null },
+    city: { type: String, required: false, default: null },
+    adress: { type: String, required: false, default: null },
+    coordinates: { type: String, required: false, default: null },
+    documentType: { type: Schema.Types.ObjectId, ref: 'DocumentType', required: false, default: null },
+    documentInfo: { type: Schema.Types.ObjectId, ref: 'DocumentInfo', required: false, default: null },
+    birthDate: { type: Date, required: true },
     isPoliticsTrue: { type: Boolean, required: "The politics field is required" },
     isTtoDtosTrue: { type: Boolean, required: "The processing of personal data field is required" }
 });
