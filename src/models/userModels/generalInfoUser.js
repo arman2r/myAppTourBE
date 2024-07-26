@@ -23,6 +23,9 @@ const userSchema = new mongoose.Schema({
     isPoliticsTrue: { type: Boolean, required: "The politics field is required" },
     isTtoDtosTrue: { type: Boolean, required: "The processing of personal data field is required" },
     password: { type: String, required: true, default: null },
+},
+{
+    timestamps: true
 });
 
 // Create a User model based on the schema

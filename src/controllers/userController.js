@@ -1,12 +1,12 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const User = require("../../models/userModels");
-const Agency = require("../../models/agency");
-const Tourist = require("../../models/tourist");
-const { sendConfirmationEmail } = require("../../utils/email"); // Utilidad para enviar correos
-const { generateConfirmationCode } = require("../../utils/helpers"); // Función para generar códigos aleatorios
-const config = require("../../config");
+const User = require("../models/userModels/generalInfoUser");
+const Agency = require("../models/userModels/agency");
+const Tourist = require("../models/userModels/tourist");
+const { sendConfirmationEmail } = require("../utils/email"); // Utilidad para enviar correos
+const { generateConfirmationCode } = require("../utils/helpers"); // Función para generar códigos aleatorios
+const config = require("../config/config");
 
 const router = express.Router();
 

@@ -1,8 +1,8 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const User = require("../../models/userModels");
-const Agency = require("../../models/agency");
-const Tourist = require("../../models/tourist");
+const User = require("../../models/userModels/generalInfoUser");
+const Agency = require("../../models/userModels/agency");
+const Tourist = require("../../models/userModels/tourist");
 
 // Función para registrar un nuevo usuario
 async function registerUser(userData) {

@@ -1,8 +1,8 @@
 const express = require("express");
-const connectDB = require("./config/connectDB");
-const userController = require("./controllers/userController");
-const userService = require("./services/userService");
-const config = require("./config");
+const connectDB = require("./src/config/db");
+const userController = require("./src/controllers/userController");
+const userService = require("./src/services/user-auth-api/general-info-user");
+const config = require("./src/config/config");
 const cors = require("cors");
 
 // Load environment variables

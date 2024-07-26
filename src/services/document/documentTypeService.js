@@ -1,5 +1,5 @@
 const express = require("express");
-const DocumentType = require("../../models/userModels");
+const DocumentType = require("../../models/userModels/documentType");
 const router = express.Router();
 const cors = require('cors'); 
 

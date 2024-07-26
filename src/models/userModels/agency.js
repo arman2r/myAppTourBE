@@ -24,6 +24,9 @@ const agencySchema = new Schema({
   },
   createAt: { type: Date, required: true },
   // Agrega otros campos específicos para agencias
+},
+{
+  timestamps: true
 });
 
 const Agency = mongoose.model("Agency", agencySchema);
