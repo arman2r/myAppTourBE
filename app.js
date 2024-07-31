@@ -1,9 +1,10 @@
 const express = require("express");
 const connectDB = require("./src/config/db");
-const userController = require("./src/controllers/userController");
-const userService = require("./src/services/user-auth-api/general-info-user");
+const userRoutes = require("./src/routes/userRoutes");
 const config = require("./src/config/config");
 const cors = require("cors");
+const swagger = require('./swagger');
+const path = require("path");
 
 // Load environment variables
 require("dotenv").config();
@@ -18,56 +19,20 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Rutas controladas por el usuario
-app.use("/api/user", userController);
+// Import Swagger setup
+swagger(app);
 
-// Ruta para registrar un nuevo usuario
-app.post("/api/register", async (req, res) => {
-  try {
-    const result = await userService.registerUser(req.body);
-    res.status(201).json(result);
-  } catch (error) {
-    console.error("Error registering user:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
+// User routes
+app.use("/api/user", userRoutes);
 
-// Ruta para autenticar e iniciar sesión
-app.post("/api/login", async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const result = await userService.loginUser(email, password);
-    res.status(200).json(result);
-  } catch (error) {
-    console.error("Error logging in user:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-// Ruta protegida para obtener detalles de usuario
-app.get("/api/userDetails", async (req, res) => {
-  try {
-    const token = req.headers["authorization"];
-    if (!token) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
-
-    const decoded = jwt.verify(token, config.secret_key);
-    const result = await userService.getUserDetails(decoded.email);
-    res.status(200).json(result);
-  } catch (error) {
-    console.error("Error getting user details:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-// Ruta predeterminada
+// Default route
 app.get("/", (req, res) => {
   res.send("Welcome to my User Registration and Login API!");
 });
 
-// Iniciar el servidor
+// Start the server
 const PORT = config.port;
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

@@ -102,7 +102,15 @@ async function getUserDetails(email) {
       throw new Error("User not found");
     }
 
-    return { username: user.username, email: user.email };
+    return { 
+      firstName: user.firstName, 
+      lastName: user.lastName, 
+      documentType: user.documentType, 
+      documentNumber: user.documentNumber, 
+      email: user.email,
+      isAgency: user.isAgency,
+      location: user.location
+    };
   } catch (error) {
     throw new Error("Error getting user details: " + error.message);
   }
