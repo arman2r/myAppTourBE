@@ -4,6 +4,11 @@ const Schema = mongoose.Schema;
 // Esquema para Tourist
 const touristSchema = new Schema(
   {
+    imageProfile: {
+      type: String, 
+      required: false,
+      default: null,
+    },
     currentLocation: {
       type: Schema.Types.ObjectId,
       ref: "CurrentLocation",

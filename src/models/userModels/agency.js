@@ -4,6 +4,11 @@ const Schema = mongoose.Schema;
 // Esquema para Agency
 const agencySchema = new Schema({
   agencyName: { type: String, required: true },
+  companyLogo: {
+    type: String, 
+    required: false,
+    default: null,
+  },
   currentLocation: {
     type: Schema.Types.ObjectId,
     ref: "CurrentLocation",
