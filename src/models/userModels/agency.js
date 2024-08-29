@@ -8,26 +8,19 @@ const agencySchema = new Schema({
     type: String, 
     required: false,
     default: null,
-  },
-  currentLocation: {
-    type: Schema.Types.ObjectId,
-    ref: "CurrentLocation",
-    required: false,
-    default: null,
-  },
+  }, 
   documentType: {
     type: Schema.Types.ObjectId,
     ref: "DocumentType",
-    required: false,
+    required: true,
     default: null,
   },
   documentInfo: {
     type: Schema.Types.ObjectId,
     ref: "DocumentInfo",
-    required: false,
+    required: true,
     default: null,
-  },
-  createAt: { type: Date, required: true },
+  }
   // Agrega otros campos específicos para agencias
 },
 {

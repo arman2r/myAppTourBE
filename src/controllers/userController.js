@@ -110,8 +110,98 @@ const registerUser = async (req, res) => {
   }
 };
 
+// Crear un nuevo tipo de documento
+const createDocumentType = async (req, res) => {
+  try {
+    const { name, description } = req.body;
+
+    const newDocumentType = new DocumentType({
+      name,
+      description,
+    });
+
+    const savedDocumentType = await newDocumentType.save();
+    res.status(201).json(savedDocumentType);
+  } catch (error) {
+    res.status(500).json({ message: "Error al crear el tipo de documento", error });
+  }
+};
+
+// Actualizar un tipo de documento existente
+const updateDocumentType = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, description } = req.body;
+
+    const updatedDocumentType = await DocumentType.findByIdAndUpdate(
+      id,
+      {
+        name,
+        description,
+      },
+      { new: true } // Para devolver el documento actualizado
+    );
+
+    if (!updatedDocumentType) {
+      return res.status(404).json({ message: "Tipo de documento no encontrado" });
+    }
+
+    res.status(200).json(updatedDocumentType);
+  } catch (error) {
+    res.status(500).json({ message: "Error al actualizar el tipo de documento", error });
+  }
+};
+
+// Obtener todos los tipos de documento
+const getAllDocumentTypes = async (req, res) => {
+  try {
+    const documentTypes = await DocumentType.find();
+    res.status(200).json(documentTypes);
+  } catch (error) {
+    res.status(500).json({ message: "Error al obtener los tipos de documento", error });
+  }
+};
+
+// Obtener un tipo de documento por ID
+const getDocumentTypeById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const documentType = await DocumentType.findById(id);
+
+    if (!documentType) {
+      return res.status(404).json({ message: "Tipo de documento no encontrado" });
+    }
+
+    res.status(200).json(documentType);
+  } catch (error) {
+    res.status(500).json({ message: "Error al obtener el tipo de documento", error });
+  }
+};
+
+// Eliminar un tipo de documento
+const deleteDocumentType = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const deletedDocumentType = await DocumentType.findByIdAndDelete(id);
+
+    if (!deletedDocumentType) {
+      return res.status(404).json({ message: "Tipo de documento no encontrado" });
+    }
+
+    res.status(200).json({ message: "Tipo de documento eliminado con éxito" });
+  } catch (error) {
+    res.status(500).json({ message: "Error al eliminar el tipo de documento", error });
+  }
+};
+
 module.exports = {
   sendConfirmationCodeEmail,
   verifyConfirmationCodeEmail,
+  createDocumentType,
+  updateDocumentType,
+  getAllDocumentTypes,
+  getDocumentTypeById,
+  deleteDocumentType,
   registerUser,
 };

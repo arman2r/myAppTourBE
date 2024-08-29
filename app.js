@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const connectDB = require("./src/config/db");
 const userRoutes = require("./src/routes/userRoutes");
+const documentType = require("./src/routes/documentType");
 const config = require("./src/config/config");
 const cors = require("cors");
 const swagger = require('./swagger');
@@ -40,6 +41,8 @@ swagger(app);
 
 // Rutas de usuario
 app.use("/api/user", userRoutes);
+// Rutas para registrar tipos de documento
+app.use("/api/documentType", documentType);
 
 // Ruta por defecto
 app.get("/", (req, res) => {
