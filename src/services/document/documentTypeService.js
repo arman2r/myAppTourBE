@@ -19,8 +19,8 @@ router.use(express.json());
 // Route to get all document types
 router.get("/", async (req, res) => {
   try {
-    const documentTypes = await DocumentType.find();
-    res.json(documentTypes);
+    const documentType = await DocumentType.find();
+    res.json(documentType);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

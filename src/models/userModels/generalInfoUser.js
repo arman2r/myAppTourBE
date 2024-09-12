@@ -25,7 +25,8 @@ const userSchema = new mongoose.Schema({
     password: { type: String, required: true, default: null },
 },
 {
-    timestamps: true
+    timestamps: true,
+    collection: "user"
 });
 
 // Create a User model based on the schema

@@ -227,6 +227,6 @@ router.post("/verifyConfirmationCodeEmail", verifyConfirmationCodeEmail);
  *                   type: string
  *                   example: Please verify that the email entered does not exist in our system.
  */
-router.post("/registerUser", registerUser);
+router.post("/userRegister", registerUser);
 
 module.exports = router;

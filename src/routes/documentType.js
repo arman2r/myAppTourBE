@@ -3,7 +3,7 @@ const {
   createDocumentType,
   updateDocumentType,
   deleteDocumentType,
-  getAllDocumentTypes,
+  getAllDocumentType,
   getDocumentTypeById
 } = require("../controllers/userController");
 
@@ -203,7 +203,7 @@ router.post("/deleteDocumentType/:id", deleteDocumentType);
 
 /**
  * @swagger
- * /api/documentType/getAllDocumentTypes:
+ * /api/documentType/getAllDocumentType:
  *   get:
  *     summary: Get all document types
  *     tags: [Document type]
@@ -250,7 +250,7 @@ router.post("/deleteDocumentType/:id", deleteDocumentType);
  *                   type: string
  *                   example: Error retrieving document types
  */
-router.post("/getAllDocumentTypes", getAllDocumentTypes);
+router.get("/getAllDocumentType", getAllDocumentType);
 
 /**
  * @swagger
@@ -316,6 +316,6 @@ router.post("/getAllDocumentTypes", getAllDocumentTypes);
  *                   type: string
  *                   example: Error retrieving the document type
  */
-router.post("/getDocumentTypeById/:id", getDocumentTypeById);
+router.get("/getDocumentTypeById/:id", getDocumentTypeById);
 
 module.exports = router;

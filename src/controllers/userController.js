@@ -1,6 +1,7 @@
 const User = require("../models/userModels/generalInfoUser");
 const { sendConfirmationEmail } = require("../utils/email");
 const { generateConfirmationCode } = require("../utils/helpers");
+const DocumentType = require('../models/userModels/documentType');
 
 const sendConfirmationCodeEmail = async (req, res) => {
   const { email } = req.body;
@@ -115,15 +116,25 @@ const createDocumentType = async (req, res) => {
   try {
     const { name, description } = req.body;
 
+    if (!name || !description) {
+      return res.status(400).json({ message: 'Nombre y descripción son requeridos' });
+    }
+
+    // Crear una nueva instancia del modelo DocumentType
     const newDocumentType = new DocumentType({
       name,
       description,
     });
 
+    // Guardar el nuevo documento en la base de datos
     const savedDocumentType = await newDocumentType.save();
+
+    // Enviar respuesta exitosa
     res.status(201).json(savedDocumentType);
   } catch (error) {
-    res.status(500).json({ message: "Error al crear el tipo de documento", error });
+    // Manejo de errores
+    console.error(error)
+    res.status(500).json({ message: 'Error al crear el tipo de documento', error });
   }
 };
 
@@ -153,11 +164,13 @@ const updateDocumentType = async (req, res) => {
 };
 
 // Obtener todos los tipos de documento
-const getAllDocumentTypes = async (req, res) => {
+const getAllDocumentType = async (req, res) => {
   try {
-    const documentTypes = await DocumentType.find();
-    res.status(200).json(documentTypes);
+    const documentType = await DocumentType.find();
+    console.log('tipos de documento',documentType)
+    res.status(200).json(documentType);
   } catch (error) {
+    console.error("Error al obtener los tipos de documento:", error);
     res.status(500).json({ message: "Error al obtener los tipos de documento", error });
   }
 };
@@ -200,7 +213,7 @@ module.exports = {
   verifyConfirmationCodeEmail,
   createDocumentType,
   updateDocumentType,
-  getAllDocumentTypes,
+  getAllDocumentType,
   getDocumentTypeById,
   deleteDocumentType,
   registerUser,
