@@ -5,6 +5,7 @@ const Schema = mongoose.Schema;
 const userSchema = new mongoose.Schema({
     names: { type: String, required: "The names field is required" },
     lastNames: { type: String, required: "The Last Names field is required" },
+    agencyName: { type: String, required: "The Last Names field is required" },
     createAt: { type: Date, default: Date.now },
     updateAt: { type: Date, default: Date.now },
     userIsActive: { type: Boolean, default: false },
@@ -14,7 +15,7 @@ const userSchema = new mongoose.Schema({
     isConfirmed: { type: Boolean, default: false },
     isTourist: { type: Boolean, required: true, default: false },
     isAgency: { type: Boolean, required: true, default: false },
-    location: {type: String, required: true, default: null},
+    location: { type: Schema.Types.ObjectId, ref: 'CurrentLocation', required: false, default: null },
     documentType: { type: Schema.Types.ObjectId, ref: 'DocumentType', required: false, default: null },
     //documentInfo: { type: Schema.Types.ObjectId, ref: 'DocumentInfo', required: false, default: null },
     documentNumber: { type: String, required: true, default: null },
