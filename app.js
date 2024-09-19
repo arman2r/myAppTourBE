@@ -3,6 +3,7 @@ const express = require("express");
 const connectDB = require("./src/config/db");
 const userRoutes = require("./src/routes/userRoutes");
 const documentType = require("./src/routes/documentType");
+const attachFileRoutes = require("./src/routes/attachFileRoutes");
 const config = require("./src/config/config");
 const cors = require("cors");
 const swagger = require('./swagger');
@@ -40,9 +41,11 @@ app.use((req, res, next) => {
 swagger(app);
 
 // Rutas de usuario
-app.use("/api/user", userRoutes);
+app.use("/api/user", userRoutes); 
 // Rutas para registrar tipos de documento
 app.use("/api/documentType", documentType);
+// Rutas de usuario
+app.use("/api/attachFile", attachFileRoutes);
 
 // Ruta por defecto
 app.get("/", (req, res) => {

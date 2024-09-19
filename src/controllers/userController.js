@@ -1,5 +1,5 @@
 const User = require("../models/userModels/generalInfoUser");
-
+const bcrypt = require("bcryptjs");
 
 /**
  * @swagger
@@ -10,9 +10,9 @@ const User = require("../models/userModels/generalInfoUser");
 
 /**
  * @swagger
- * /userRegister:
+ * /api/user/userRegister:
  *   post:
- *     summary: Crear un nuevo usuario
+ *     summary: Register a new user
  *     tags: [User Register]
  *     requestBody:
  *       required: true
@@ -23,57 +23,58 @@ const User = require("../models/userModels/generalInfoUser");
  *             properties:
  *               names:
  *                 type: string
- *                 description: Nombres del usuario
+ *                 description: User's first name
  *               lastNames:
  *                 type: string
- *                 description: Apellidos del usuario
+ *                 description: User's last name
  *               agencyName:
  *                 type: string
- *                 description: Nombre de la agencia dado el caso
+ *                 description: Name of the agency, if applicable
  *               email:
  *                 type: string
- *                 description: Correo electrónico del usuario
+ *                 format: email
+ *                 description: User's email address
  *               phone:
  *                 type: string
- *                 description: Teléfono del usuario
+ *                 description: User's phone number
  *               confirmationCode:
  *                 type: string
- *                 description: Código de confirmación del usuario
+ *                 description: Confirmation code for user verification
  *               isConfirmed:
  *                 type: boolean
- *                 description: Indica si el usuario está confirmado
+ *                 description: Indicates if the user is confirmed
  *               isTourist:
  *                 type: boolean
- *                 description: Indica si el usuario es un turista
+ *                 description: Indicates if the user is a tourist
  *               isAgency:
  *                 type: boolean
- *                 description: Indica si el usuario es una agencia
+ *                 description: Indicates if the user is an agency
  *               location:
  *                 type: string
- *                 description: ID de la ubicación del usuario
+ *                 description: User's location ID
  *               documentType:
  *                 type: string
- *                 description: ID del tipo de documento
+ *                 description: Document type ID
  *               documentNumber:
  *                 type: string
- *                 description: Número del documento
+ *                 description: Document number
  *               documentIssueDate:
  *                 type: string
  *                 format: date
- *                 description: Fecha de emisión del documento
+ *                 description: Date of document issuance
  *               birthDate:
  *                 type: string
  *                 format: date
- *                 description: Fecha de nacimiento del usuario
+ *                 description: User's birth date
  *               isPoliticsTrue:
  *                 type: boolean
- *                 description: Aceptación de política
+ *                 description: User's acceptance of terms and conditions
  *               isTtoDtosTrue:
  *                 type: boolean
- *                 description: Aceptación de procesamiento de datos personales
+ *                 description: User's acceptance of data processing policies
  *               password:
  *                 type: string
- *                 description: Contraseña del usuario
+ *                 description: User's password
  *             example:
  *               names: John
  *               lastNames: Doe
@@ -94,37 +95,136 @@ const User = require("../models/userModels/generalInfoUser");
  *               password: password123
  *     responses:
  *       201:
- *         description: Usuario creado con éxito
+ *         description: User created successfully
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/models/userModels/generalInfoUser'
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   $ref: '#/components/schemas/User'
  *       400:
- *         description: Datos de entrada no válidos
+ *         description: Invalid input data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Email already exists
  *       500:
- *         description: Error del servidor
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Error creating user
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *           description: The user's unique identifier
+ *         names:
+ *           type: string
+ *         lastNames:
+ *           type: string
+ *         agencyName:
+ *           type: string
+ *         email:
+ *           type: string
+ *         phone:
+ *           type: string
+ *         confirmationCode:
+ *           type: string
+ *         isConfirmed:
+ *           type: boolean
+ *         isTourist:
+ *           type: boolean
+ *         isAgency:
+ *           type: boolean
+ *         location:
+ *           type: string
+ *         documentType:
+ *           type: string
+ *         documentNumber:
+ *           type: string
+ *         documentIssueDate:
+ *           type: string
+ *           format: date
+ *         birthDate:
+ *           type: string
+ *           format: date
+ *         isPoliticsTrue:
+ *           type: boolean
+ *         isTtoDtosTrue:
+ *           type: boolean
+ *         password:
+ *           type: string
+ *       required:
+ *         - names
+ *         - lastNames
+ *         - email
+ *         - phone
+ *         - password
  */
 const registerUser = async (req, res) => {
   try {
-    const user = new User(req.body);
-    await user.save();
+    const { email, password, ...rest } = req.body; // Desestructurar para extraer email y password
+
+    // Verificar si el correo electrónico ya existe
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "El correo electrónico ya está registrado.",
+      });
+    }
+
+    // Hash de la contraseña
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Crear el nuevo usuario con la contraseña encriptada
+    const newUser = new User({
+      ...rest, // Otros campos del usuario
+      email,
+      password: hashedPassword, // Reemplazar la contraseña con la versión encriptada
+    });
+
+    // Guardar el usuario en la base de datos
+    const savedUser = await newUser.save();
+
     res.status(201).json({
       success: true,
-      data: user,
+      data: savedUser,
     });
   } catch (error) {
-    console.error(error);
+    console.error("Error al registrar el usuario:", error);
     res.status(500).json({
       success: false,
-      message: "Error al crear el usuario",
+      message: "Error al crear el usuario.",
     });
   }
 };
 
-
 /**
  * @swagger
- * /users:
+ * /api/user/users:
  *   get:
  *     summary: Obtener todos los usuarios
  *     tags: [User Register]
@@ -160,7 +260,7 @@ const getAllUsers = async (req, res) => {
 
 /**
  * @swagger
- * /users/email/{email}:
+ * /api/user/{email}:
  *   get:
  *     summary: Obtener un usuario por correo electrónico
  *     tags: [User Register]
@@ -221,7 +321,7 @@ const getUserByEmail = async (req, res) => {
 
 /**
  * @swagger
- * /users/{id}:
+ * /api/user/{id}:
  *   put:
  *     summary: Actualizar un usuario por ID
  *     tags: [User Register]
@@ -308,7 +408,7 @@ const updateUser = async (req, res) => {
 
 /**
  * @swagger
- * /users/{id}:
+ * /api/user/{id}:
  *   delete:
  *     summary: Eliminar un usuario por ID
  *     tags: [User Register]
