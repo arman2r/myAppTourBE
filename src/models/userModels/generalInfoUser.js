@@ -5,6 +5,7 @@ const Schema = mongoose.Schema;
 const userSchema = new mongoose.Schema({
     names: { type: String, required: "The names field is required" },
     lastNames: { type: String, required: "The Last Names field is required" },
+    agencyName: { type: String, required: "The Last Names field is required" },
     createAt: { type: Date, default: Date.now },
     updateAt: { type: Date, default: Date.now },
     userIsActive: { type: Boolean, default: false },
@@ -12,10 +13,21 @@ const userSchema = new mongoose.Schema({
     phone: { type: String, required: "The phone field is required" },
     confirmationCode: { type: String, required: true },
     isConfirmed: { type: Boolean, default: false },
-    isTourist: { type: Schema.ObjectId, ref: "Tourist", required: false, default: null },
-    isAgency: { type: Schema.ObjectId, ref: "Agency", required: false, default: null },
+    isTourist: { type: Boolean, required: true, default: false },
+    isAgency: { type: Boolean, required: true, default: false },
+    location: { type: Schema.Types.ObjectId, ref: 'CurrentLocation', default: null },
+    documentType: { type: Schema.Types.ObjectId, ref: 'DocumentType', default: null },
+    //documentInfo: { type: Schema.Types.ObjectId, ref: 'DocumentInfo', required: false, default: null },
+    documentNumber: { type: String, required: true, default: null },
+    documentIssueDate: { type: Date, required: true, default: null },
+    birthDate: { type: Date, required: true },
     isPoliticsTrue: { type: Boolean, required: "The politics field is required" },
-    isTtoDtosTrue: { type: Boolean, required: "The processing of personal data field is required" }
+    isTtoDtosTrue: { type: Boolean, required: "The processing of personal data field is required" },
+    password: { type: String, required: true, default: null },
+},
+{
+    timestamps: true,
+    collection: "user"
 });
 
 // Create a User model based on the schema
