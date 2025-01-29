@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Schema = mongoose.Schema;
-const autogen = require('swagger-autogen')({openapi: '3.0.0'});
+const autogen = require('swagger-autogen')({ openapi: '3.0.0' });
 const User = require('../models/userModels')
 
 //api key twilio VLDDKZXFBZPHUYBKBLUYHMVM
@@ -12,6 +12,12 @@ const User = require('../models/userModels')
 // Creating an Express application instance
 const app = express();
 const PORT = 3000;
+
+/*
+db
+arman2r
+NbwwZOwmdGSsHUpC
+*/
 
 // Connect to MongoDB database
 mongoose.connect('mongodb://localhost:27017/mydatabase')
@@ -21,9 +27,6 @@ mongoose.connect('mongodb://localhost:27017/mydatabase')
   .catch((error) => {
     console.error('Error connecting to MongoDB:', error);
   });
-
- 
-
 
 
 // Función para generar un código aleatorio
@@ -117,7 +120,7 @@ app.post('/api/register', async (req, res) => {
     // Create a new user
     const newUser = new User({
       username: req.body.username,
-      email: req.body.email,      
+      email: req.body.email,
       names: req.body.names,
       lastNames: req.body.lastNames,
       createAt: Date.now(),
